@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-DB_PATH = "data/bot.db"
+DB_PATH = "/tmp/bot.db"
 
 SERVICES = [
     "Консультация и осмотр",
@@ -38,7 +38,6 @@ TIMES = ["09:00", "10:30", "12:00", "14:00", "16:00", "18:00"]
 
 # ================= БАЗА =================
 def init_db():
-    os.makedirs("data", exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
