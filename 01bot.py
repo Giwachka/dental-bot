@@ -20,6 +20,8 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+DB_PATH = "data/bot.db"
+
 SERVICES = [
     "Консультация и осмотр",
     "Лечение кариеса",
@@ -36,7 +38,8 @@ TIMES = ["09:00", "10:30", "12:00", "14:00", "16:00", "18:00"]
 
 # ================= БАЗА =================
 def init_db():
-    conn = sqlite3.connect("bot.db")
+    os.makedirs("data", exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -65,7 +68,7 @@ def init_db():
     conn.close()
 
 def save_user(user_id, name, phone, username, age="", pain_level="", notes=""):
-    conn = sqlite3.connect("bot.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         INSERT INTO users (user_id, name, phone, username, age, pain_level, notes)
@@ -82,14 +85,14 @@ def save_user(user_id, name, phone, username, age="", pain_level="", notes=""):
     conn.close()
 
 def update_user_field(user_id, field, value):
-    conn = sqlite3.connect("bot.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute(f"UPDATE users SET {field} = ? WHERE user_id = ?", (value, user_id))
     conn.commit()
     conn.close()
 
 def get_user(user_id):
-    conn = sqlite3.connect("bot.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT name, phone, username, age, pain_level, notes FROM users WHERE user_id = ?", (user_id,))
     row = c.fetchone()
@@ -97,7 +100,7 @@ def get_user(user_id):
     return row
 
 def save_appointment(user_id, service, date, time, cabinet, doctor):
-    conn = sqlite3.connect("bot.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         INSERT INTO appointments (user_id, service, date, time, cabinet, doctor, created_at)
@@ -107,7 +110,7 @@ def save_appointment(user_id, service, date, time, cabinet, doctor):
     conn.close()
 
 def get_appointments(user_id):
-    conn = sqlite3.connect("bot.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         SELECT service, date, time, cabinet, doctor FROM appointments
